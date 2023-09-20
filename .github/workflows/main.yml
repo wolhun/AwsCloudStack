@@ -3,30 +3,29 @@ name: Deploy to Amazon S3
 on:
   push:
     branches:
-      - main  # Ensure this matches your default branch name
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true  # Only if you want to temporarily use Node12
 
     steps:
-    # Use the latest version of the checkout action
     - name: Checkout code
-      uses: actions/checkout@v2  # As of my last update in January 2022, v2 is the latest. You might want to check if there's a newer version.
+      uses: actions/checkout@v2
 
-    # Optionally, set up Node.js 16 if any of your actions require it (this is optional and based on the warning you received, but might not be necessary for your specific actions)
     - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
         node-version: '16'
 
-    # Deploy to S3 using the action you've specified
     - name: Deploy to S3
-      uses: jakejarvis/s3-sync-action@master  # Consider pinning this to a specific version instead of using @master for stability.
+      uses: jakejarvis/s3-sync-action@master
       with:
         args: --acl public-read --follow-symlinks --delete
       env:
         AWS_S3_BUCKET: business-experts-magazine
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: 'us-east-1'  # Ensure this matches your desired AWS region
+        AWS_REGION: 'us-east-1'
